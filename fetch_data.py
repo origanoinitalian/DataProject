@@ -1,15 +1,26 @@
 import os
+import pandas as pd
 from dotenv import load_dotenv
 from newsapi import NewsApiClient
 
-load_dotenv()
+def api_runner():
 
-API_KEY = os.getenv('API_KEY')
-newsapi = NewsApiClient(API_KEY)
+    load_dotenv()
 
-top_headlines = newsapi.get_top_headlines(q='bitcoin',
-                                          category='business',
-                                          language='en',
-                                          country='us')
+    API_KEY = os.getenv('API_KEY')
+    newsapi = NewsApiClient(API_KEY)
 
-print(top_headlines)
+    top_headlines = newsapi.get_top_headlines(category='business',
+                                              language='en',
+                                              country='us')
+
+
+    df2 = pd.json_normalize(top_headlines, record_path=['articles'])
+    df2['timestamp'] = pd.to_datetime('now')
+    df = df2._append(df2)
+    print(df)
+    
+    
+api_runner()
+
+
