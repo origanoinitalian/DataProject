@@ -1,13 +1,10 @@
 import requests
-import pathlib as Path
 import json
-import pandas as pd
 
 def api_runner():
-
     response = requests.get('https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&starttime=2024-01-01&endtime=2024-01-02')
     data = response.json()
-    with open("earthquake_data.json", "w") as f:
+    with open("data/raw/earthquake_data.json", "w") as f:
         json.dump(data, f, indent=4)
     
     new_features = []
@@ -29,9 +26,6 @@ def api_runner():
         new_features.append(filterd_features)
     
     new_json = {'earthquakes': new_features}
-    with open("filtered_earthquake_data.json", "w") as f:
+    with open("data/cleaned/filtered_earthquake_data.json", "w") as f:
         json.dump(new_json, f, indent=4)
     
-api_runner()
-
-

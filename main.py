@@ -1,5 +1,6 @@
 from dash import Dash, dcc, html  
 import plotly.express as px 
+from src.utils.get_data import api_runner
 
 year = 2002
 
@@ -40,4 +41,6 @@ app.layout = html.Div(
 )
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    #app.run(debug=True)
+    api_runner()
+
