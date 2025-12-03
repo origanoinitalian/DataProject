@@ -1,0 +1,18 @@
+from dash import html
+import dash_bootstrap_components as dbc
+
+def create_navbar():
+    navbar = dbc.NavbarSimple(
+            children=[
+                dbc.NavItem(dbc.NavLink("GLobal view", href="/", active="exact")),
+                dbc.NavItem(dbc.NavLink("Analytics", href="/analytics", active="exact")),
+                dbc.NavItem(dbc.NavLink("Explorer", href="/explorer", active="exact")),
+                dbc.NavItem(dbc.NavLink("About", href="/about", active="exact")),
+            ],
+            brand="Earthquake tracker",
+            brand_href="/",
+            color="dark",#TODO: button to change from dark/light
+            dark=True,
+            className="mb-4" #just to put the margin down
+        )
+    return navbar
