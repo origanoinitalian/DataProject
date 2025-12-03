@@ -1,46 +1,27 @@
 from dash import Dash, dcc, html  
 import plotly.express as px 
-from src.utils.get_data import api_runner
+import dash_ag_grid as dag
+from src.utils.get_data import DataProcessor
+from src.utils.to_datetime import to_datetime
+import pandas as pd
 
-year = 2002
+app = Dash()
 
-gapminder = px.data.gapminder()
-years = sorted(gapminder["year"].unique())
-data_by_year = {y: gapminder.query("year == @y") for y in years}
+dataprocessor = DataProcessor('2024-01-01', '2024-01-02', 'data/raw/raw_earthquakes.json', 'data/cleaned/cleaned_earthquakes.csv')
 
-app = Dash(__name__)
-
-fig = px.scatter(
-    data_by_year[year],
-    x="gdpPercap",
-    y="lifeExp",
-    color="continent",
-    size="pop",
-    hover_name="country",
-    size_max=60,
-    log_x=True,
-    labels={"gdpPercap": "GDP per capita", "lifeExp": "Life expectancy"},
-    title=f"Life expectancy vs GDP per capita ({year})",
-)
-
-app.layout = html.Div(
-    children=[
-        html.H1(
-            children=f"Life expectancy vs GDP per capita ({year})",
-            style={"textAlign": "center", "color": "#7FDBFF"},
-        ),
-        dcc.Graph(id="graph1", figure=fig),
-        html.Div(
-            children=(
-                "The graph above shows the relationship between life expectancy and GDP per capita "
-                f"for year {year}. Each continent has its own color and point size is proportional "
-                "to country population. Hover for details."
-            )
-        ),
-    ]
-)
+def main():
+    df = pd.read_json('data/cleaned/filtered_earthquake_data.json')
+    app.layout = [html.Div(children="Hello World"),
+                  dag.AgGrid(
+                      rowData=df.to_dict('records'),
+                      columnDefs=[{"field": i} for i in df.columns]
+                      )
+                  ]
+    app.run(debug=True)
 
 if __name__ == "__main__":
-    #app.run(debug=True)
-    api_runner()
+    dataprocessor.fetch_data()
+    dataprocessor.clean_data()
+    #main()
+    #api_runner()
 
