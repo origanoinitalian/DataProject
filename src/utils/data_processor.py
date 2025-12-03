@@ -45,10 +45,29 @@ class DataProcessor:
         df['date-time'] = pd.to_datetime(df['time'], unit='ms')
         df['date-label'] = df['date-time'].dt.strftime('%d-%m-%Y %H:%M')
         df['region'] = df['place'].apply(lambda x: x.split(',')[-1].strip() if ',' in x else x)
+        df['url-usgs'] = df['url']
         columns_to_keep = ['id', 'title', 'magnitude', 'date-time', 'date-label',
-                           'latitude', 'longitude', 'depth', 'region']
+                           'latitude', 'longitude', 'depth', 'region', 'url-usgs']
         existing_columns = [col for col in columns_to_keep if col in df.columns]
         cleaned_df = df[existing_columns]
         cleaned_df.to_csv(self._save_clean_path, index=False)
-
      
+
+def manage_data(should_fetch: bool) -> None:
+    RAW_PATH = 'data/raw/raw_earthquakes.json'
+    CLEAN_PATH = 'data/cleaned/cleaned_earthquakes.csv'
+
+    data_processor = DataProcessor(
+            start_time='2024-01-01', #TODO: maybe change that to allocate it dynamically hehe
+            end_time='2024-02-01',
+            save_raw_path=RAW_PATH,
+            save_clean_path=CLEAN_PATH
+        )
+    if should_fetch:
+        data_processor.fetch_data()
+        data_processor.clean_data()
+    else:
+        print("Nothing to process")
+        #TODO: maybe check if the file actually is here for good practice but lazy
+
+
