@@ -47,7 +47,7 @@ class DataProcessor:
         df['date-label'] = df['date-time'].dt.strftime('%d-%m-%Y %H:%M')
         df['region'] = df['place'].apply(lambda x: x.split(',')[-1].strip() if ',' in x else x)
         df['url-usgs'] = df['url']
-        columns_to_keep = ['id', 'title', 'magnitude', 'date-time', 'date-label',
+        columns_to_keep = ['id', 'title', 'magnitude', 'magnitude_type', 'date-time', 'date-label',
                            'latitude', 'longitude', 'depth', 'region', 'url-usgs']
         existing_columns = [col for col in columns_to_keep if col in df.columns]
         cleaned_df = df[existing_columns]
