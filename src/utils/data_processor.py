@@ -17,6 +17,7 @@ class DataProcessor:
         for feature in data['features']:
             filterd_features = {
                 'magnitude': feature['properties']['mag'],
+                'magnitude_type': feature['properties']['magType'],
                 'place': feature['properties']['place'],
                 'time': feature['properties']['time'],
                 'significant' : feature['properties']['sig'],
