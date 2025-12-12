@@ -2,6 +2,7 @@ import requests
 import json
 import pandas as pd
 import os
+from datetime import datetime, timedelta
 
 class DataProcessor:#TODO Fix fetching actually we need a better polling to the api since it's rate limited
     def __init__(self, start_time: str, end_time: str, save_raw_path: str, save_clean_path: str) -> None:
@@ -18,6 +19,7 @@ class DataProcessor:#TODO Fix fetching actually we need a better polling to the 
         for feature in data['features']:
             filterd_features = {
                 'magnitude': feature['properties']['mag'],
+                'magnitude_type': feature['properties']['magType'],
                 'place': feature['properties']['place'],
                 'time': feature['properties']['time'],
                 'significant' : feature['properties']['sig'],
@@ -47,20 +49,25 @@ class DataProcessor:#TODO Fix fetching actually we need a better polling to the 
         df['date-label'] = df['date-time'].dt.strftime('%d-%m-%Y %H:%M')
         df['region'] = df['place'].apply(lambda x: x.split(',')[-1].strip() if ',' in x else x)
         df['url-usgs'] = df['url']
-        columns_to_keep = ['id', 'title', 'magnitude', 'date-time', 'date-label',
+        columns_to_keep = ['id', 'title', 'magnitude', 'magnitude_type', 'date-time', 'date-label',
                            'latitude', 'longitude', 'depth', 'region', 'url-usgs']
         existing_columns = [col for col in columns_to_keep if col in df.columns]
         cleaned_df = df[existing_columns]
         cleaned_df.to_csv(self._save_clean_path, index=False)
      
 
-def manage_data(should_fetch: bool) -> None:
+def manage_data(should_fetch: bool, start_time: str = None, end_time: str = None) -> None:
     RAW_PATH = 'data/raw/raw_earthquakes.json'
     CLEAN_PATH = 'data/cleaned/cleaned_earthquakes.csv'
 
+    if not start_time or not end_time:
+        end_time = datetime.now().strftime('%Y-%m-%d')
+        start_time = (datetime.now() - timedelta(days=30)).strftime('%Y-%m-%d')      #TODO: maybe optimize this?!
+        print(f"No dates specified. Defaulting to: {start_time} to {end_time}")
+
     data_processor = DataProcessor(
-            start_time='2024-01-01', #TODO: maybe change that to allocate it dynamically hehe
-            end_time='2024-02-01',
+            start_time=start_time, 
+            end_time=end_time,
             save_raw_path=RAW_PATH,
             save_clean_path=CLEAN_PATH
         )

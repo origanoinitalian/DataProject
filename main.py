@@ -5,6 +5,7 @@ from src.utils.data_processor import manage_data
 from src.utils.arg_parser import parse_arguments
 from src.components.navbar import create_navbar
 
+
 app = Dash(
         __name__,
         use_pages=True,
@@ -21,8 +22,14 @@ app.layout = html.Div([
 
 def main():
     args = parse_arguments()
-    manage_data(args.fetch_data)
+    manage_data(
+        should_fetch=args.fetch_data,
+        start_time=args.start_time,
+        end_time=args.end_time
+    )
     app.run(debug=True)
+
+
 
 if __name__ == "__main__":
     main()
