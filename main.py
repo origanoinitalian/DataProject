@@ -5,11 +5,15 @@ from src.utils.data_processor import DataProcessor, manage_data
 from src.utils.arg_parser import parse_arguments
 import pandas as pd
 
-app = Dash()
+app = Dash(__name__)
 
 def main():
     args = parse_arguments()
-    manage_data(args.fetch_data)
+    manage_data(
+        should_fetch=args.fetch_data,
+        start_time=args.start_time,
+        end_time=args.end_time
+    )
 
 if __name__ == "__main__":
 
