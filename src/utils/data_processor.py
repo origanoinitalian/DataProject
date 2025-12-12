@@ -1,6 +1,7 @@
 import requests
 import json
 import pandas as pd
+from datetime import datetime, timedelta
 
 class DataProcessor:
     def __init__(self, start_time: str, end_time: str, save_raw_path: str, save_clean_path: str) -> None:
@@ -54,13 +55,18 @@ class DataProcessor:
         cleaned_df.to_csv(self._save_clean_path, index=False)
      
 
-def manage_data(should_fetch: bool) -> None:
+def manage_data(should_fetch: bool, start_time: str = None, end_time: str = None) -> None:
     RAW_PATH = 'data/raw/raw_earthquakes.json'
     CLEAN_PATH = 'data/cleaned/cleaned_earthquakes.csv'
 
+    if not start_time or not end_time:
+        end_time = datetime.now().strftime('%Y-%m-%d')
+        start_time = (datetime.now() - timedelta(days=30)).strftime('%Y-%m-%d')
+        print(f"No dates specified. Defaulting to: {start_time} to {end_time}")
+
     data_processor = DataProcessor(
-            start_time='2024-01-01', #TODO: maybe change that to allocate it dynamically hehe
-            end_time='2024-02-01',
+            start_time=start_time, #TODO: maybe change that to allocate it dynamically hehe
+            end_time=end_time,
             save_raw_path=RAW_PATH,
             save_clean_path=CLEAN_PATH
         )
