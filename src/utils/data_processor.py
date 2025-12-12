@@ -61,11 +61,11 @@ def manage_data(should_fetch: bool, start_time: str = None, end_time: str = None
 
     if not start_time or not end_time:
         end_time = datetime.now().strftime('%Y-%m-%d')
-        start_time = (datetime.now() - timedelta(days=30)).strftime('%Y-%m-%d')
+        start_time = (datetime.now() - timedelta(days=30)).strftime('%Y-%m-%d')      #TODO: maybe optimize this?!
         print(f"No dates specified. Defaulting to: {start_time} to {end_time}")
 
     data_processor = DataProcessor(
-            start_time=start_time, #TODO: maybe change that to allocate it dynamically hehe
+            start_time=start_time, 
             end_time=end_time,
             save_raw_path=RAW_PATH,
             save_clean_path=CLEAN_PATH
