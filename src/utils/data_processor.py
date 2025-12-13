@@ -1,9 +1,10 @@
 import requests
 import json
 import pandas as pd
+import os
 from datetime import datetime, timedelta
 
-class DataProcessor:
+class DataProcessor:#TODO Fix fetching actually we need a better polling to the api since it's rate limited
     def __init__(self, start_time: str, end_time: str, save_raw_path: str, save_clean_path: str) -> None:
         self._start_time = start_time
         self._end_time = end_time
@@ -11,7 +12,7 @@ class DataProcessor:
         self._save_clean_path = save_clean_path
 
     def fetch_data(self) -> None:
-        response = requests.get(f'https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&starttime={self._start_time}&endtime={self._end_time}')
+        response = requests.get(f'https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&starttime={self._start_time}&endtime={self._end_time}&minmagnitude=4')
         data = response.json()
         new_features = []
 
@@ -78,3 +79,12 @@ def manage_data(should_fetch: bool, start_time: str = None, end_time: str = None
         #TODO: maybe check if the file actually is here for good practice but lazy
 
 
+def data_loader():
+    DATA_PATH = "data/cleaned/cleaned_earthquakes.csv"
+    if not os.path.exists(DATA_PATH):
+        return pd.DataFrame()
+    df = pd.read_csv(DATA_PATH)
+
+    if 'date-time' in df.columns:
+        df['date-time'] = pd.to_datetime(df['date-time'])
+    return df
