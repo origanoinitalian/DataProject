@@ -20,6 +20,7 @@ dependencies = [
     "markupsafe==3.0.3",
     "narwhals==2.7.0",
     "nest-asyncio==1.6.0",
+    "netcdf4>=1.7.3",
     "numpy==2.2.6",
     "packaging==25.0",
     "pandas==2.3.3",
