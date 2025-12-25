@@ -17,20 +17,23 @@ def prepare_plot():
     cmin = -8000
     cmax = 8000
     topo_sphere=dict(type='surface',
-      x=xs,
-      y=ys,
-      z=zs,
-      colorscale=Ctopo,
-      surfacecolor=topo,
-      cmin=cmin,
-      cmax=cmax)
+        x=xs,
+        y=ys,
+        z=zs,
+        colorscale=Ctopo,
+        surfacecolor=topo,
+        showscale=False,
+        cmin=cmin,
+        cmax=cmax
+    )
     noaxis=dict(showbackground=False,
-      showgrid=False,
-      showline=False,
-      showticklabels=False,
-      ticks='',
-      title='',
-      zeroline=False)
+        showgrid=False,
+        showline=False,
+        showticklabels=False,
+        ticks='',
+        title='',
+        zeroline=False
+    )
 
     return topo_sphere, noaxis
 
@@ -39,11 +42,12 @@ def sphere_component():
     bgcolor = 'black'
     topo_sphere, noaxis = prepare_plot()
     layout = go.Layout(
-    autosize=False, width=1200, height=800,
-    #title = '3D spherical topography map',
+    autosize=True, 
+    margin=dict(l=0, r=0, b=0, t=0),
     title=dict(
         text='3D spherical topography map',
-        font=dict(family='Courier New', color=title_color)
+        font=dict(family='Courier New', color=title_color),
+        y=0.99
     ),
     showlegend = False,
     scene = dict(
