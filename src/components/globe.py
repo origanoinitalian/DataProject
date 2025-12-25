@@ -9,6 +9,10 @@ def prepare_plot():
 
     lon_topo, lat_topo, topo = etopo(LON_AREA, LAT_AREA, RESOLUTION)
     xs, ys, zs = mapping_to_sphere(lon_topo, lat_topo)
+    ratio_topo = 1.0 + topo*1e-5
+    xs_3d = xs*ratio_topo
+    ys_3d = ys*ratio_topo
+    zs_3d = zs*ratio_topo
     Ctopo = [[0, 'rgb(0, 0, 70)'],[0.2, 'rgb(0,90,150)'], 
               [0.4, 'rgb(150,180,230)'], [0.5, 'rgb(210,230,250)'],
               [0.50001, 'rgb(0,120,0)'], [0.57, 'rgb(220,180,130)'], 
@@ -17,9 +21,9 @@ def prepare_plot():
     cmin = -8000
     cmax = 8000
     topo_sphere=dict(type='surface',
-        x=xs,
-        y=ys,
-        z=zs,
+        x=xs_3d,
+        y=ys_3d,
+        z=zs_3d,
         colorscale=Ctopo,
         surfacecolor=topo,
         showscale=False,
