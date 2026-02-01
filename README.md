@@ -54,7 +54,7 @@ To balance performance and API rate limits, the application uses a **Hybrid Data
 ## Features
 
 - **3D Explorer**  
-  Interactive WebGL globe using NOAA ETOPO1 relief data to visualize seismic depth and global distribution.
+  Interactive globe using NOAA ETOPO1 relief data to visualize seismic depth and global distribution.
 
 - **Global View**  
   2D Mapbox visualization with clustering, paired with a sortable **Ag-Grid** data table.
@@ -123,7 +123,7 @@ If you don't have `uv` installed:
 curl -LsSf https://astral.sh/uv/install.sh | sh
 
 # On Windows
-powershell -c irm https://astral.sh/uv/install.ps1 | iex"
+powershell -c irm https://astral.sh/uv/install.ps1 | iex
 ```
 
 ### 2. Setup and run

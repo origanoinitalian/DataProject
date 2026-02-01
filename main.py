@@ -35,7 +35,7 @@ def main():
         start_time=args.start_time,
         end_time=args.end_time
     )
-    app.run(debug=True)
+    app.run(debug=False)
 
 
 
