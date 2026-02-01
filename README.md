@@ -132,7 +132,7 @@ uv will automatically download the correct Python version (3.12), create the vir
 git clone <repository-url>
 cd DataProject
 
-# Create environment with Python 3.12 explicitly (avoids compatibility issues with the latest version of Dash and Flash)
+# Create environment with Python 3.12 explicitly (avoids compatibility issues with the latest version of Dash and Flask)
 uv venv --python 3.12
 
 # Install dependencies
