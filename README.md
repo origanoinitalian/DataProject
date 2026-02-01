@@ -113,20 +113,37 @@ cd DataProject
 
 ### 2 - Environment Setup
 
-It is strongly recommended to use a virtual environment.
+This project uses **uv**, a modern and extremely fast Python package manager written in Rust. It automatically handles Python version management (ensuring stability) and dependency resolution.
 
+### 1. Install uv
+If you don't have `uv` installed:
 ```bash
-# Create virtual environment
-python -m venv .venv
+# On macOS/Linux
+curl -LsSf [https://astral.sh/uv/install.sh](https://astral.sh/uv/install.sh) | sh
 
-# Activate virtual environment
-# Windows
-.venv\Scripts\activate
-
-# macOS / Linux
-source .venv/bin/activate
+# On Windows
+powershell -c "irm [https://astral.sh/uv/install.ps1](https://astral.sh/uv/install.ps1) | iex"
 ```
 
+### 2. Setup and run
+uv will automatically download the correct Python version (3.12), create the virtual environment, and install dependencies in one go.
+```bash
+# Clone the repository
+git clone <repository-url>
+cd DataProject
+
+# Create environment with Python 3.12 explicitly (avoids compatibility issues with the latest version of Dash and Flash)
+uv venv --python 3.12
+
+# Install dependencies
+uv pip install -r requirements.txt
+
+# Fetch data if needed
+uv run main.py --fetch-data --start-time 2020-01-01 --end-time 2026-02-01
+
+# Launch the App
+uv run main.py
+```
 ---
 
 ### 3 - Install Dependencies
