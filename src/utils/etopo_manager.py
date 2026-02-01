@@ -49,7 +49,6 @@ def etopo(lon_area, lat_area, resolution):
   
     return lon, lat, topo
 
-
 def degree_to_radians(degree):
     return degree * np.pi/180
 
