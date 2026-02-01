@@ -216,4 +216,9 @@ This project is designed with **scalability and performance** in mind, and can e
 
 ---
 
-## Made by Yanis Amedjkane & Avishan Abnidezhad
+This project is licensed under the MIT License.
+
+### Data Attribution
+* **Seismic Data:** Public domain data provided by the [USGS Earthquake Hazards Program](https://earthquake.usgs.gov/).
+* **Topography:** Public domain data provided by the [NOAA National Centers for Environmental Information](https://www.ngdc.noaa.gov/mgg/global/global.html)
+* **Ryota Kiuchi, Ph.D.** for the implementation logic of the 3D ETOPO1 relief mapping, adapted from his article [Create Interactive Globe Earthquake Plot in Python](https://towardsdatascience.com/create-interactive-globe-earthquake-plot-in-python-b0b52b646f27/).
