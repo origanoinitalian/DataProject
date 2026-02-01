@@ -119,10 +119,10 @@ This project uses **uv**, a modern and extremely fast Python package manager wri
 If you don't have `uv` installed:
 ```bash
 # On macOS/Linux
-curl -LsSf [https://astral.sh/uv/install.sh](https://astral.sh/uv/install.sh) | sh
+curl -LsSf https://astral.sh/uv/install.sh | sh
 
 # On Windows
-powershell -c "irm [https://astral.sh/uv/install.ps1](https://astral.sh/uv/install.ps1) | iex"
+powershell -c "irm https://astral.sh/uv/install.ps1 | iex"
 ```
 
 ### 2. Setup and run
