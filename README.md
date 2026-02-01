@@ -114,6 +114,8 @@ cd DataProject
 ### 2 - Environment Setup
 
 This project uses **uv**, a modern and extremely fast Python package manager written in Rust. It automatically handles Python version management (ensuring stability) and dependency resolution.
+Since we thrive on being actual modern developers, we decided to use uv for the project instead of a requirements.txt file coupled with pip. As developers we should actually fight having to ever need to write
+"source .venv/bin/activate" !
 
 ### 1. Install uv
 If you don't have `uv` installed:
@@ -122,38 +124,22 @@ If you don't have `uv` installed:
 curl -LsSf https://astral.sh/uv/install.sh | sh
 
 # On Windows
-powershell -c "irm https://astral.sh/uv/install.ps1 | iex"
+powershell -c irm https://astral.sh/uv/install.ps1 | iex"
 ```
 
 ### 2. Setup and run
-uv will automatically download the correct Python version (3.12), create the virtual environment, and install dependencies in one go.
+uv will automatically detect the needed Python version for our project (which is 3.12), create the virtual environment and sync dependencies using the lockfile.
 ```bash
-# Clone the repository
-git clone <repository-url>
-cd DataProject
 
-# Create environment with Python 3.12 explicitly (avoids compatibility issues with the latest version of Dash and Flask)
-uv venv --python 3.12
+# Install dependencies (creates .venv based on uv.lock)
+uv sync
 
-# Install dependencies
-uv pip install -r requirements.txt
-
-# Fetch data if needed
+# Fetch data (Downloads ~6 years of data + ETOPO1 topography if needed)
 uv run main.py --fetch-data --start-time 2020-01-01 --end-time 2026-02-01
 
-# Launch the App
+# Else just launch the app normally
 uv run main.py
 ```
----
-
-### 3 - Install Dependencies
-
-```bash
-pip install -r requirements.txt
-```
-
-> **Note:** Ensure `pyarrow` is installed to enable Parquet file operations.
-
 ---
 
 ### 4 - Data Initialization
@@ -214,7 +200,8 @@ DataProject/
 │       └── arg_parser.py     # CLI argument management
 │       └── etopo_manager.py  # ETOPO management
 ├── main.py                   # Application entry point
-└── requirements.txt          # Python dependencies
+├── pyproject.toml            # Project configuration and dependencies
+└── uv.lock                   # Version locking
 ```
 
 ---
@@ -225,5 +212,8 @@ This project is designed with **scalability and performance** in mind, and can e
 - Additional real-time data sources
 - Advanced seismic analytics
 - Machine learning–based anomaly detection
+- Or even creative coding and creative plotting
 
 ---
+
+## Made by Yanis Amedjkane & Avishan Abnidezhad

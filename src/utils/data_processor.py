@@ -7,6 +7,7 @@ import gzip
 import shutil
 from datetime import datetime, timedelta, timezone
 from src.utils.cache_config import cache
+from tqdm import tqdm
 
 class DataProcessor:
     """
@@ -167,6 +168,7 @@ def manage_data(should_fetch: bool, start_time: str = None, end_time: str = None
             processor.clean_data()
         elif not os.path.exists(CLEAN_PATH):
             print("Careful, no local data found: run with --fetch-data")
+    check_and_download_etopo()
 
 @cache.memoize(timeout=3600)
 def data_loader():
@@ -179,33 +181,55 @@ def data_loader():
     
     return df
 
+import os
+import requests
+import gzip
+import shutil
+from tqdm import tqdm
+
 def check_and_download_etopo():
     """
-    Checks if the ETOPO1 file exists. If it doesn't, we download it and unzip it.
+    Checks if the ETOPO1 file exists. If it doesn't, we download it with a progress bar and unzip it.
     """
     ETOPO_PATH = "data/cleaned/ETOPO1_Ice_g_gdal.grd"
-    ETOPO_URL = "https://www.ngdc.noaa.gov/mgg/global/relief/ETOPO1/data/bedrock/grid_registered/netcdf/ETOPO1_Ice_g_gdal.grd.gz"
+    ETOPO_URL = "https://www.ngdc.noaa.gov/mgg/global/relief/ETOPO1/data/ice_surface/grid_registered/netcdf/ETOPO1_Ice_g_gdal.grd.gz"
     
     if os.path.exists(ETOPO_PATH):
         return
 
-    print("ETOPO1 topography data missing. Downloading from NOAA (this may take a minute)...")
+    print("ETOPO1 topography data missing.")
     os.makedirs(os.path.dirname(ETOPO_PATH), exist_ok=True)
     
     try:
-        response = requests.get(ETOPO_URL, stream=True)
-        response.raise_for_status()
-        temp_gz_path = ETOPO_PATH + ".gz"
-        with open(temp_gz_path, 'wb') as f:
-            for chunk in response.iter_content(chunk_size=8192):
-                f.write(chunk)
+        with requests.get(ETOPO_URL, stream=True) as response:
+            response.raise_for_status()
+            
+            total_size = int(response.headers.get('content-length', 0))
+            block_size = 8192
+            temp_gz_path = ETOPO_PATH + ".gz"
+            print(f"Downloading from NOAA ({total_size / (1024*1024):.2f} MB)...")
+            
+            with open(temp_gz_path, 'wb') as f, tqdm(
+                desc="Downloading",
+                total=total_size,
+                unit='iB',
+                unit_scale=True,
+                unit_divisor=1024,
+            ) as bar:
+                for chunk in response.iter_content(chunk_size=block_size):
+                    size = f.write(chunk)
+                    bar.update(size) 
+
         print("Unzipping topography data...")        
         with gzip.open(temp_gz_path, 'rb') as f_in:
             with open(ETOPO_PATH, 'wb') as f_out:
                 shutil.copyfileobj(f_in, f_out)
+        
         os.remove(temp_gz_path)
         print("ETOPO1 setup complete.")
         
     except Exception as e:
         print(f"Error downloading ETOPO1: {e}")
         print("The 3D globe will appear flat.")
+        if os.path.exists(temp_gz_path):
+            os.remove(temp_gz_path)
