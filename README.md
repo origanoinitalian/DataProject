@@ -108,7 +108,6 @@ To balance performance and API rate limits, the application uses a **Hybrid Data
 git clone <repository-url>
 cd DataProject
 ```
-
 ---
 
 ### 2 - Environment Setup
@@ -141,32 +140,6 @@ uv run main.py --fetch-data --start-time 2020-01-01 --end-time 2026-02-01
 uv run main.py
 ```
 ---
-
-### 4 - Data Initialization
-
-Before running the dashboard, fetch historical seismic data from the USGS API.  
-The process uses **30-day chunks** to respect API rate limits.
-
-```bash
-python main.py --fetch-data --start-time 2020-01-01 --end-time 2026-02-01
-```
-
-This will:
-- Download raw data
-- Clean and normalize events
-- Store results in:
-
-```
-data/cleaned/cleaned_earthquakes.parquet
-```
-
----
-
-### 5 - Launch the Application
-
-```bash
-python main.py
-```
 
 The dashboard will be available at:
 
