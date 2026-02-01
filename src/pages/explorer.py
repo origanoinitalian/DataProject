@@ -35,6 +35,7 @@ initial_layout = go.Layout(
 )
 
 def layout():
+    """Defines the layout structure for the 3D Explorer page."""
     df_init = data_loader()
 
     if not df_init.empty:
@@ -110,6 +111,7 @@ def layout():
      Input('interval-component', 'n_intervals')]
 )
 def update_globe(start_date, end_date, n_intervals):
+    """Callback to update the 3D globe with filtered historical and live data."""
     df_main = data_loader()
     
     selected_end = pd.to_datetime(end_date)

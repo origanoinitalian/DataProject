@@ -14,6 +14,7 @@ from src.components.analytics_charts import (
 dash.register_page(__name__, path='/', name="Analysis")
 
 def layout():
+    """Constructs the dashboard layout for the Analytics page."""
     min_date = date(2000, 1, 1)
     max_date = datetime.now().date()
     start_default = date(2023, 1, 1)
@@ -76,6 +77,7 @@ def layout():
      Input('date-range-picker', 'end_date')]
 )
 def update_analytics(start_date, end_date):
+    """Updates all analytic charts and KPIs based on the selected date range."""
     df = data_loader()
 
     if df.empty:

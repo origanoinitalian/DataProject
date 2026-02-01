@@ -6,6 +6,12 @@ from pathlib import Path
 
 #credit to Ryota Kiuchi, Ph.D. for the excellent tutorial
 def etopo(lon_area, lat_area, resolution):
+    """
+    Reads ETOPO1 topography data from a NetCDF file.
+    
+    Returns:
+        tuple: (longitude grid, latitude grid, topography data)
+    """
     current_dir = Path(__file__).resolve().parent
     root_dir = current_dir.parent.parent
     new_path = os.path.join(root_dir, "data", "cleaned", "ETOPO1_Ice_g_gdal.grd")
@@ -53,6 +59,7 @@ def degree_to_radians(degree):
     return degree * np.pi/180
 
 def mapping_to_sphere(lon ,lat, radius=1):
+    """Maps 2D longitude/latitude coordinates to 3D Cartesian coordinates."""
     lon=np.array(lon, dtype=np.float64)
     lat=np.array(lat, dtype=np.float64)
     lon=degree_to_radians(lon)
@@ -61,4 +68,3 @@ def mapping_to_sphere(lon ,lat, radius=1):
     ys=radius*np.sin(lon)*np.cos(lat)
     zs=radius*np.sin(lat)
     return xs, ys, zs
-

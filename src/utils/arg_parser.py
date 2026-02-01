@@ -1,6 +1,7 @@
 import argparse
 
 def parse_arguments() -> argparse.Namespace:
+    """Parses command-line arguments for data fetching settings."""
     parser = argparse.ArgumentParser(description="Dashboard start")
     parser.add_argument(
             '--fetch-data',

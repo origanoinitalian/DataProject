@@ -3,11 +3,17 @@ import json
 import pandas as pd
 import os
 import time
+import gzip
+import shutil
 from datetime import datetime, timedelta, timezone
 from src.utils.cache_config import cache
 
 class DataProcessor:
+    """
+    Handles fetching, cleaning, and saving earthquake data from the API.
+    """
     def __init__(self, start_time: str, end_time: str, save_raw_path: str, save_clean_path: str):
+        """Initializes the processor with time range and file paths."""
         self._start_time = datetime.strptime(start_time, "%Y-%m-%d")
         self._end_time = datetime.strptime(end_time, "%Y-%m-%d")
         self._save_raw_path = save_raw_path
@@ -15,6 +21,7 @@ class DataProcessor:
         self._base_url = "https://earthquake.usgs.gov/fdsnws/event/1/query"
 
     def _fetch_single_chunk(self, start: datetime, end: datetime):
+        """Fetches a specific time chunk of data from the API."""
         params = {
             'format': 'geojson',
             'starttime': start.strftime("%Y-%m-%d"),
@@ -35,6 +42,7 @@ class DataProcessor:
             return []
 
     def fetch_data(self) -> None:
+        """Iterates through the date range to fetch and save raw earthquake data."""
         all_features = []
         current_start = self._start_time
         chunk_size = timedelta(days=30)
@@ -67,6 +75,7 @@ class DataProcessor:
             json.dump(all_features, f, indent=4)
 
     def clean_data(self) -> None:
+        """Reads raw JSON data, processes columns, and saves as optimized Parquet."""
         if not os.path.exists(self._save_raw_path):
             print("No file found, run --fetch-data")
             return
@@ -98,6 +107,7 @@ class DataProcessor:
 
     @staticmethod
     def fetch_live_data() -> pd.DataFrame:
+        """Fetches the last 24 hours of seismic data for real-time updates."""
         try:
             now = datetime.now(timezone.utc)
             start_time = (now - timedelta(hours=24)).strftime('%Y-%m-%d')
@@ -138,6 +148,7 @@ class DataProcessor:
 
 
 def manage_data(should_fetch: bool, start_time: str = None, end_time: str = None) -> None:
+    """Orchestrates data fetching and cleaning based on user args."""
     RAW_PATH = 'data/raw/raw_earthquakes.json'
     CLEAN_PATH = 'data/cleaned/cleaned_earthquakes.parquet'
 
@@ -159,6 +170,7 @@ def manage_data(should_fetch: bool, start_time: str = None, end_time: str = None
 
 @cache.memoize(timeout=3600)
 def data_loader():
+    """Loads clean Parquet data with caching."""
     DATA_PATH = "data/cleaned/cleaned_earthquakes.parquet"
     
     if not os.path.exists(DATA_PATH):
@@ -166,3 +178,34 @@ def data_loader():
     df = pd.read_parquet(DATA_PATH)
     
     return df
+
+def check_and_download_etopo():
+    """
+    Checks if the ETOPO1 file exists. If it doesn't, we download it and unzip it.
+    """
+    ETOPO_PATH = "data/cleaned/ETOPO1_Ice_g_gdal.grd"
+    ETOPO_URL = "https://www.ngdc.noaa.gov/mgg/global/relief/ETOPO1/data/bedrock/grid_registered/netcdf/ETOPO1_Ice_g_gdal.grd.gz"
+    
+    if os.path.exists(ETOPO_PATH):
+        return
+
+    print("ETOPO1 topography data missing. Downloading from NOAA (this may take a minute)...")
+    os.makedirs(os.path.dirname(ETOPO_PATH), exist_ok=True)
+    
+    try:
+        response = requests.get(ETOPO_URL, stream=True)
+        response.raise_for_status()
+        temp_gz_path = ETOPO_PATH + ".gz"
+        with open(temp_gz_path, 'wb') as f:
+            for chunk in response.iter_content(chunk_size=8192):
+                f.write(chunk)
+        print("Unzipping topography data...")        
+        with gzip.open(temp_gz_path, 'rb') as f_in:
+            with open(ETOPO_PATH, 'wb') as f_out:
+                shutil.copyfileobj(f_in, f_out)
+        os.remove(temp_gz_path)
+        print("ETOPO1 setup complete.")
+        
+    except Exception as e:
+        print(f"Error downloading ETOPO1: {e}")
+        print("The 3D globe will appear flat.")

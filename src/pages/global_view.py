@@ -11,6 +11,7 @@ from src.components.seismic_grid import render_seismic_grid
 dash.register_page(__name__, path='/global-view', name="Global View")
 
 def layout():
+    """Generates the layout for the 2D Global View (Map + Data Grid)."""
     min_date = date(2000, 1, 1)
     max_date = datetime.now().date()
     start_default = (datetime.now() - timedelta(days=30)).date()
@@ -79,6 +80,7 @@ def layout():
      Input('view-date-picker', 'end_date')]
 )
 def update_view(start_date, end_date):
+    """Updates the 2D map and data grid based on selected dates."""
     df = data_loader()
     
     if df.empty:
