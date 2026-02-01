@@ -95,8 +95,7 @@ class DataProcessor:
         df['depth'] = df['coordinates'].apply(lambda x: x[2] if x else None)
         df['date-time'] = pd.to_datetime(df['time'], unit='ms')
         df['date-label'] = df['date-time'].dt.strftime('%d-%m-%Y %H:%M')
-        df['region'] = df['place'].apply(lambda x: x.split(',')[-1].strip() if x and ',' in x else x)
-        
+        df['region'] = df['place'].apply(lambda x: x.split(',')[-1].strip() if isinstance(x, str) and ',' in x else str(x))        
         cols = ['id', 'title', 'magnitude', 'date-time', 'date-label', 
                 'latitude', 'longitude', 'depth', 'region', 'url']
         final_cols = [c for c in cols if c in df.columns]
