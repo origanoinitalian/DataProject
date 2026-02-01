@@ -3,8 +3,8 @@ import dash_bootstrap_components as dbc
 def create_navbar():
     navbar = dbc.NavbarSimple(
             children=[
-                dbc.NavItem(dbc.NavLink("Global view", href="/", active="exact")),
-                dbc.NavItem(dbc.NavLink("Analytics", href="/analytics", active="exact")),
+                dbc.NavItem(dbc.NavLink("Global view", href="/global-view", active="exact")),
+                dbc.NavItem(dbc.NavLink("Analytics", href="/", active="exact")),
                 dbc.NavItem(dbc.NavLink("Explorer", href="/explorer", active="exact")),
                 dbc.NavItem(dbc.NavLink("About", href="/about", active="exact")),
             ],

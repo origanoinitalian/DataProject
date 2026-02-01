@@ -1,104 +1,212 @@
+# Earthquake 3D Explorer & Analytics Dashboard
 
-# Earthquake Tracker Dashboard
+## Project Overview
 
-An interactive web application built with **Dash** and **Plotly** to visualize and analyze global seismic activity.  
-This project features a statistical dashboard and a high-resolution **3D interactive globe** using the **ETOPO1** topographic model.
+Our dashboard provides a **multi-dimensional view** of earthquake data by combining:
+
+- A **3D interactive globe**
+- A **high-precision 2D map**
+- An **analytics dashboard** with statistical insights
+
+The project is built with **Python**, **Dash**, and **Plotly**, and relies on a **hybrid data architecture** that merges large historical datasets with real-time seismic feeds.
+
+---
+
+## Data Strategy & Architecture
+
+### Data Source
+
+All seismic data is sourced from the **USGS (United States Geological Survey) – Earthquake Hazards Program API**.
+
+Each event includes:
+- Magnitude
+- Depth
+- Geographic location
+- Timestamp
+
+---
+
+### Storage Optimization — Parquet vs CSV
+
+The application uses **Apache Parquet** instead of CSV for local data persistence, for the following reasons:
+
+1. **High I/O Performance**  
+   Parquet is a *columnar* format, enabling faster reads and writes—especially when filtering specific fields. The choice to use Parquet instead of CSV is non-arbitrary and reloading pages is way faster with our huge dataset rather than using CSV format.
+
+2. **Native Type Preservation**  
+   Datetime and numeric types are preserved, eliminating repeated parsing operations such as `pd.to_datetime()`.
+
+---
+
+### Hybrid Real-Time Engine
+
+To balance performance and API rate limits, the application uses a **Hybrid Data Loading Strategy**:
+
+- **Historical Data**  
+  Long-term seismic data (e.g. last 6 years) loaded from local Parquet cache.
+- **Live Data**  
+  Lightweight API request fetching only the last 24 hours of events.
+- **In-Memory Fusion**  
+  Both datasets are merged at runtime to provide historical context alongside real-time updates.
 
 ---
 
 ## Features
 
-- **Global 3D Explorer**  
-  Visualize earthquakes on a 3D sphere with realistic relief.
+- **3D Explorer**  
+  Interactive WebGL globe using NOAA ETOPO1 relief data to visualize seismic depth and global distribution.
 
-- **Statistical Analytics**  
-  Interactive histograms (Magnitude vs. Depth) and time series.
+- **Global View**  
+  2D Mapbox visualization with clustering, paired with a sortable **Ag-Grid** data table.
 
-- **Dynamic Filtering**  
-  Filter data by date ranges to observe specific seismic trends.
+- **Analytics Module**  
+  - Magnitude distribution histograms  
+  - Depth vs magnitude scatter plots  
+  - Regional seismic activity rankings
 
-- **High-Resolution Topography**  
-  Integration of NOAA's **ETOPO1** model for accurate seafloor and land relief.
+- **Performance Optimization**  
+  - Server-side caching via **Flask-Caching**
+  - Client-side data decimation for smooth rendering of 100k+ points
 
----
-
-## Prerequisites
-
-Before starting, ensure you have the following installed:
-
-- **Python 3.10+**
-- **uv** —> an extremely fast Python package and project manager
-
-### Install `uv`
-
-```bash
-# MacOS / Linux
-curl -LsSf https://astral.sh/uv/install.sh | sh
-```
-
-```powershell
-# Windows (PowerShell)
-powershell -c "irm https://astral.sh/uv/install.ps1 | iex"
-```
+- **Lazy Loading**  
+  Pages and heavy datasets load only when requested, ensuring fast application startup.
 
 ---
 
-## Installation
+## Technical Stack
 
-### 1. Clone the repository
+**Frontend / Backend**
+- Plotly Dash
+- Flask
+
+**Data Processing**
+- Pandas
+- NumPy
+- PyArrow
+
+**Visualization**
+- Plotly Graph Objects
+- Plotly Express
+
+**UI Components**
+- Dash Bootstrap Components
+- Dash Ag-Grid
+
+**Caching**
+- Flask-Caching (still can be improved with actual filtering)
+
+**HTTP**
+- Requests
+
+---
+
+## Installation & Setup
+
+### 1 - Clone the Repository
 
 ```bash
-git clone https://github.com/your-username/DataProject.git
+git clone <repository-url>
 cd DataProject
 ```
 
-### 2. Sync dependencies
+---
+
+### 2 - Environment Setup
+
+It is strongly recommended to use a virtual environment.
 
 ```bash
-uv sync
+# Create virtual environment
+python -m venv .venv
+
+# Activate virtual environment
+# Windows
+.venv\Scripts\activate
+
+# macOS / Linux
+source .venv/bin/activate
 ```
 
 ---
 
-## Data Setup
-
-### 1. Earthquake Data
-
-The application fetches real-time data from the **USGS API**.  
-To initialize your local dataset, run:
+### 3 - Install Dependencies
 
 ```bash
-uv run python main.py --fetch-data
+pip install -r requirements.txt
+```
+
+> **Note:** Ensure `pyarrow` is installed to enable Parquet file operations.
+
+---
+
+### 4 - Data Initialization
+
+Before running the dashboard, fetch historical seismic data from the USGS API.  
+The process uses **30-day chunks** to respect API rate limits.
+
+```bash
+python main.py --fetch-data --start-time 2020-01-01 --end-time 2026-02-01
+```
+
+This will:
+- Download raw data
+- Clean and normalize events
+- Store results in:
+
+```
+data/cleaned/cleaned_earthquakes.parquet
 ```
 
 ---
 
-### 2. ETOPO1 Topography (Manual Download)
+### 5 - Launch the Application
 
-The high-resolution relief file is too large (~890 MB) to be hosted on GitHub.
+```bash
+python main.py
+```
 
-Steps:
+The dashboard will be available at:
 
-1. Visit the **NOAA ETOPO Global Relief Model** page  
-2. Go to the **ETOPO1 "Legacy"** section  
-3. Download: `ETOPO1_Ice_g_gdal.grd.gz`  
-4. Decompress to obtain: `ETOPO1_Ice_g_gdal.grd`  
-5. Place the file here:
+**http://127.0.0.1:8050**
 
-```text
-data/cleaned/ETOPO1_Ice_g_gdal.grd
+---
+
+## Project Structure
+
+```plaintext
+DataProject/
+├── data/
+│   ├── cleaned/              # Optimized Parquet datasets
+│   └── raw/                  # Raw USGS JSON responses
+├── src/
+│   ├── components/           # Reusable UI & visualization components
+│   │   ├── globe.py
+│   │   ├── histogram.py
+│   │   ├── seismic_mercator_map.py
+│   │   ├── seismic_grid.py
+│   │   └── analytics_charts.py
+│   │   └── navbar.py
+│   ├── pages/                # Dashboard pages
+│   │   ├── explorer.py
+│   │   ├── analytics.py
+│   │   ├── global_view.py
+│   │   └── about.py
+│   └── utils/
+│       ├── data_processor.py # API handling
+│       ├── cache_config.py   # Flask-Caching config
+│       └── arg_parser.py     # CLI argument management
+│       └── etopo_manager.py  # ETOPO management
+├── main.py                   # Application entry point
+└── requirements.txt          # Python dependencies
 ```
 
 ---
 
-## Running the App
+## Notes
 
-```bash
-uv run python main.py
-```
+This project is designed with **scalability and performance** in mind, and can easily be extended to:
+- Additional real-time data sources
+- Advanced seismic analytics
+- Machine learning–based anomaly detection
 
-Open your browser at:
-
-```
-http://127.0.0.1:8050/
-```
+---
