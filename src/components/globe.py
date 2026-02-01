@@ -15,7 +15,8 @@ def mapping_to_sphere(lon, lat, radius=1):
 def get_etopo_trace():
     RESOLUTION = 0.8
     lon_topo, lat_topo, topo = etopo([-180., 180.], [-90., 90.], RESOLUTION)
-    xs, ys, zs = mapping_to_sphere(lon_topo, lat_topo)
+    v_radius = 1.0 + (topo/8000.0) * 0.06
+    xs, ys, zs = mapping_to_sphere(lon_topo, lat_topo, radius=v_radius)
     Ctopo = [
         [0, 'rgb(0, 0, 70)'], [0.2, 'rgb(0, 90, 150)'], 
         [0.4, 'rgb(150, 180, 230)'], [0.5, 'rgb(210, 230, 250)'],
@@ -30,6 +31,13 @@ def get_etopo_trace():
         cmin=-8000,
         cmax=8000,
         showscale=False,
+        lighting=dict(
+            ambient=0.3,
+            diffuse=1.0,
+            specular=0.5,
+            roughness=0.1
+        ),
+        lightposition=dict(x=1000, y=1000, z=0),
         hoverinfo='skip'
     )
 

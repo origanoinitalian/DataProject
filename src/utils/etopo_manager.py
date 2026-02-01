@@ -58,7 +58,7 @@ def etopo(lon_area, lat_area, resolution):
 def degree_to_radians(degree):
     return degree * np.pi/180
 
-def mapping_to_sphere(lon ,lat, radius=1):
+def mapping_to_sphere(lon ,lat, radius=1.06):
     """Maps 2D longitude/latitude coordinates to 3D Cartesian coordinates."""
     lon=np.array(lon, dtype=np.float64)
     lat=np.array(lat, dtype=np.float64)
